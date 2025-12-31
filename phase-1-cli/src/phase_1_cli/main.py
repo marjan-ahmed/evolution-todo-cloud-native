@@ -25,7 +25,11 @@ from textual.widgets import (
 )
 
 # CLI app instance
-cli_app = typer.Typer(help="Modern Terminal Todo Application")
+cli_app = typer.Typer(
+    help="Toony 2do - Modern Terminal Todo Application",
+    no_args_is_help=True,
+    add_completion=False
+)
 console = Console()
 
 
@@ -664,8 +668,11 @@ def show_stats_cli():
 
 
 def run() -> None:
-    """Entry point - launch UI by default"""
-    launch_ui()
+    """Entry point - launch TUI directly"""
+    console.print(pyfiglet.figlet_format("Toony 2do", font="slant"), style="bold cyan")
+    console.print("Launching interactive UI...\n", style="green")
+    app = TodoApp()
+    app.run()
 
 
 if __name__ == "__main__":

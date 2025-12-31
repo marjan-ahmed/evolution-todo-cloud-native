@@ -1,41 +1,27 @@
 # Toony 2do - Modern Terminal Todo Application
 
-A beautiful, interactive command-line todo application built with Python, featuring both a Text User Interface (TUI) and traditional CLI commands.
+A beautiful, interactive terminal todo application built with Python, featuring a stunning Text User Interface (TUI) with ASCII art branding.
 
 ## Features
 
 - **Interactive TUI** - Full-featured text-based user interface with keyboard navigation
-- **CLI Commands** - Quick task management from the command line
 - **ASCII Art Banner** - Beautiful pyfiglet-powered "Toony 2do" branding
 - **Rich Formatting** - Colorful output with rich tables and formatting
 - **Keyboard Shortcuts** - Efficient navigation and task management
 - **Task Statistics** - Real-time progress tracking
+- **Easy to Use** - Just run `toony-2do` and start managing tasks!
 
 ## Installation
-
-### From PyPI
 
 ```bash
 pip install toony-2do
 ```
 
-### From Source
-
-```bash
-git clone <repository-url>
-cd phase-1-cli
-pip install -e .
-```
-
 ## Usage
 
-### Interactive TUI Mode
-
-Launch the full interactive interface:
+Simply run the command to launch the interactive interface:
 
 ```bash
-toony-2do ui
-# or simply
 toony-2do
 ```
 
@@ -46,30 +32,6 @@ toony-2do
 - `space` - Toggle task completion
 - `q` - Quit application
 - Arrow keys - Navigate tasks
-
-### CLI Commands
-
-Quick task management from the command line:
-
-```bash
-# Add a new task
-toony-2do add "Buy groceries" --desc "Milk, eggs, bread"
-todo add "Call doctor"
-
-# List all tasks
-toony-2do list
-todo list --pending    # Show only pending tasks
-todo list --completed  # Show only completed tasks
-
-# Mark task as complete
-toony-2do complete 1
-
-# Delete a task
-toony-2do delete 2 --yes  # Skip confirmation
-
-# Show statistics
-toony-2do stats
-```
 
 ## Features in Detail
 
@@ -82,14 +44,6 @@ The TUI provides a rich, interactive experience with:
 - **Modal Dialogs** - User-friendly forms for adding and editing tasks
 - **Confirmation Dialogs** - Safe deletion with confirmation prompts
 
-### CLI Interface
-
-Fast command-line operations for:
-- Quick task addition without launching the TUI
-- Listing tasks with filtering options
-- Batch operations and scripting support
-- Integration with shell scripts and automation
-
 ### Task Management
 
 - **Task Properties**: ID, title, description, completion status, creation timestamp
@@ -99,7 +53,6 @@ Fast command-line operations for:
 ## Technology Stack
 
 - **Textual** - Modern TUI framework for rich terminal interfaces
-- **Typer** - Beautiful CLI with automatic help generation
 - **Rich** - Rich text and beautiful formatting in the terminal
 - **Pyfiglet** - ASCII art text generation
 - **Pydantic** - Data validation and settings management
