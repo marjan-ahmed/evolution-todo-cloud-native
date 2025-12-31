@@ -1,0 +1,24 @@
+[project]
+name = "phase-1-cli"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Marjan Ahmed", email = "marjan.ahmed08@yahoo.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.12.5",
+    "pyfiglet>=1.0.2",
+    "rich>=14.2.0",
+    "textual>=6.11.0",
+    "typer>=0.15.1",
+]
+
+[project.scripts]
+phase-1-cli = "phase_1_cli.main:cli_app"
+todo = "phase_1_cli.main:cli_app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
