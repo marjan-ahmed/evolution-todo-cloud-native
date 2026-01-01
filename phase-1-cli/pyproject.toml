@@ -37,7 +37,7 @@ Repository = "https://github.com/marjan-ahmed/evolution-todo-sdd"
 Issues = "https://github.com/marjan-ahmed/evolution-todo-sdd/issues"
 
 [project.scripts]
-toony-2do = "phase_1_cli.main:cli_app"
+toony-2do = "phase_1_cli.main:run"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/phase_1_cli"]
