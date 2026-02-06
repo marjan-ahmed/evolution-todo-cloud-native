@@ -7,7 +7,7 @@
 
 ## Summary
 
-Build a modern, interactive terminal-based todo application with visual polish and modular architecture. The application provides five core operations (Add, View, Update, Delete, Toggle Status) through a menu-driven interface with keyboard shortcuts. Tasks are stored in-memory with no persistence, displayed in styled tables with color-coded status indicators (☐ Pending / ☑ Completed), and managed through a decoupled TaskManager business logic layer. Target audience is developers, hackathon judges, and Python enthusiasts evaluating polished CLI tools.
+Build a modern, interactive terminal-based todo application with visual polish and modular architecture. The application provides five core operations (Add, View, Update, Delete, Toggle Status) plus advanced organization features: priority levels (High/Medium/Low), category labels (Work/Home/Personal), keyword search, multi-criteria filtering, task sorting (by priority/due date/alphabetically), due dates with reminders, and recurring tasks (Daily/Weekly/Monthly). Tasks are stored in-memory with no persistence, displayed in styled tables with color-coded indicators (☐/☑, 🔴🟡🟢 priorities, ⚠️ due soon), and managed through a decoupled TaskManager business logic layer. Target audience is developers, hackathon judges, and Python enthusiasts evaluating polished CLI tools.
 
 **Technical Approach**: Use Textual framework for reactive TUI components with Rich library for terminal formatting. Implement clean architecture with strict separation between UI (Textual widgets and screens), business logic (TaskManager class), and data models (Task dataclass). Package management via UV with `--package` flag for modern Python project structure.
 
@@ -19,9 +19,9 @@ Build a modern, interactive terminal-based todo application with visual polish a
 **Testing**: pytest (unit tests for TaskManager), Textual's built-in testing utilities (UI component tests)
 **Target Platform**: Cross-platform terminals (Windows 10/11, macOS 12+, Ubuntu 20.04+) with 256-color support and minimum 80x24 size
 **Project Type**: Single Python package (phase-1-cli) managed with UV
-**Performance Goals**: Operations complete in under 1 second for up to 100 tasks, UI updates in under 200ms, handles 1000 tasks without noticeable degradation
+**Performance Goals**: Operations complete in under 1 second for up to 100 tasks, search/filter in under 500ms, UI updates in under 200ms, handles 1000 tasks without noticeable degradation
 **Constraints**: No persistence, Python-only with no OS-specific system calls, UTF-8 encoding required, in-memory storage limit ~10MB for task data
-**Scale/Scope**: Single-user desktop application, 5 core operations, expected usage: 10-100 tasks per session, runtime duration: minutes to hours
+**Scale/Scope**: Single-user desktop application, 10 core operations (5 basic + 5 advanced), expected usage: 10-100 tasks per session, runtime duration: minutes to hours
 
 ## Constitution Check
 
@@ -32,29 +32,35 @@ Build a modern, interactive terminal-based todo application with visual polish a
 - ✅ **Keyboard shortcuts**: Footer displays shortcuts for all operations (FR-011, User Story 5)
 - ✅ **Clear prompts**: Input validation with helpful error messages (FR-005)
 - ✅ **Instant feedback**: Real-time table updates and statistics (FR-009, SC-006)
+- ✅ **Search & Filter**: Easy access to search input and filter options (FR-020, FR-021, User Story 7)
+- ✅ **Sort options**: Clear indication of current sort order (FR-024, User Story 8)
 
 ### II. Aesthetic Design
 - ✅ **Color-coded indicators**: ☐ Pending (gray/white), ☑ Completed (green) (FR-007, FR-013)
+- ✅ **Priority indicators**: 🔴 High, 🟡 Medium, 🟢 Low (FR-016, User Story 6)
+- ✅ **Due date indicators**: ⚠️ Due soon, 🔴 OVERDUE badges (FR-027, User Story 9)
 - ✅ **Styled tables**: Bordered panels with proper spacing (FR-006)
-- ✅ **Icon usage**: Status indicators and visual hierarchy (FR-007)
-- ✅ **Typography**: Readable spacing and layout per success criteria (SC-004)
+- ✅ **Icon usage**: Status, priority, due date, and recurrence indicators (FR-007, FR-033)
+- ✅ **Typography**: Readable spacing and layout per success criteria (SC-004, SC-020)
 
 ### III. Modular Architecture
 - ✅ **UI/Logic separation**: TaskManager class independent of UI (FR-012, SC-008)
-- ✅ **No business logic in UI handlers**: TaskManager handles all CRUD operations
-- ✅ **Data models separate**: Task dataclass defined independently
-- ✅ **Clear interfaces**: TaskManager provides clean API for UI layer
+- ✅ **No business logic in UI handlers**: TaskManager handles all CRUD operations and advanced features (search, filter, sort, recurrence)
+- ✅ **Data models separate**: Task dataclass defined independently with extended fields
+- ✅ **Clear interfaces**: TaskManager provides clean API for UI layer including new operations
 
 ### IV. Reusability
 - ✅ **Generic UI components**: Textual widgets accept data models
-- ✅ **Pluggable business logic**: TaskManager can be swapped or extended
-- ✅ **No hardcoded assumptions**: Task structure uses standard fields
+- ✅ **Pluggable business logic**: TaskManager can be swapped or extended with new features
+- ✅ **No hardcoded assumptions**: Task structure uses standard fields but extensible for priority, categories, due dates
 
 ### V. Responsiveness
 - ✅ **Real-time updates**: Table and stats refresh immediately (FR-009)
 - ✅ **Confirmation dialogs**: Delete operations require confirmation (FR-010)
 - ✅ **Error feedback**: Validation errors displayed instantly (FR-005)
 - ✅ **Performance target**: <200ms visual feedback (SC-002)
+- ✅ **Search/filter performance**: Updates in under 500ms (FR-022, SC-013)
+- ✅ **Reminder notifications**: Display when tasks become due/overdue (FR-028, User Story 9)
 
 ### VI. Cross-Platform Compatibility
 - ✅ **Python-only**: No OS-specific system calls (FR-015)
@@ -219,12 +225,70 @@ phase-1-cli/                    # UV package (created with uv init --package)
      - Run app: `uv run python -m phase_1_cli`
      - Run tests: `uv run pytest`
 
+6. ✅ **Search, Filter, and Sort Implementation Strategy**
+   - **Decision**: Implement search with list comprehension, filter with predicate functions, sort with Python's `sorted()` with key functions
+   - **Rationale**:
+     - List comprehension provides clean Pythonic search across task titles/descriptions
+     - Predicate functions enable flexible multi-criteria filtering (AND logic)
+     - Python's `sorted()` with `key=` parameters efficient for <1000 tasks
+     - No external dependencies needed, leverages built-in capabilities
+   - **Alternatives Considered**:
+     - Index-based search: Overkill for small datasets
+     - Database query: Violates in-memory constraint
+     - Third-party search libraries: Unnecessary for simple keyword matching
+   - **Implementation Notes**:
+     - Search: `[t for t in tasks if keyword.lower() in t.title.lower() or keyword.lower() in t.description.lower()]`
+     - Filter: Combine predicates with `all()`: `[t for t in tasks if all(pred(t) for pred in active_filters)]`
+     - Sort: `sorted(tasks, key=lambda t: priority_order[t.priority])` with custom order dict
+     - Cache filtered/sorted results for display but recompute on any task modification
+
+7. ✅ **Due Date and Reminder System Design**
+   - **Decision**: Use Python `datetime` for date/time management, Textual's `interval()` widget for periodic checks
+   - **Rationale**:
+     - Python's `datetime` module handles timezone-aware times, date arithmetic, and comparisons
+     - Textual's `interval()` provides reactive timer-based UI updates without blocking
+     - Comparison operators work naturally with datetime objects (e.g., `if due_date < datetime.now()`)
+     - Simple and reliable without external dependencies
+   - **Alternatives Considered**:
+     - `dateutil` library: Adds dependency for simple date arithmetic
+     - Manual string parsing: Error-prone for user input
+     - OS notifications: Cross-platform complexity, violates terminal-only constraint
+   - **Implementation Notes**:
+     - Store due dates as UTC datetime objects
+     - Due soon check: `if 0 <= (due_date - now).total_seconds() <= 86400` (24 hours)
+     - Overdue check: `if due_date < now`
+     - Display formatted: `due_date.strftime("%b %d, %Y %I:%M %p")`
+     - Textual interval checks every 30 seconds for reminder updates
+     - Summary on launch: Filter and sort tasks by due date, show top 5 upcoming
+
+8. ✅ **Recurring Tasks Implementation Pattern**
+   - **Decision**: Use template task concept with `recurrence` enum, create new instance on completion with calculated next due date
+   - **Rationale**:
+     - Template pattern allows flexible recurrence without complex scheduling engine
+     - Date arithmetic straightforward with `datetime` (timedelta days=7 for weekly, days=30 for monthly)
+     - Maintains task ownership through task completion flow
+     - No external scheduling library needed
+   - **Alternatives Considered**:
+     - Cron-based scheduling: Overkill for simple daily/weekly/monthly patterns
+     - Task duplication at creation: Wastes memory, doesn't handle date drift
+     - Background scheduler: Adds complexity, violates in-memory simplicity
+   - **Implementation Notes**:
+     - Store recurrence pattern: `None | "Daily" | "Weekly" | "Monthly"`
+     - On toggle_task() to True: Check if `task.recurrence != None`
+     - Calculate next due date: `next_date = task.due_date + timedelta(days=7)` for weekly
+     - Create new task: Copy title, description, priority, category; new ID; completed=False
+     - Monthly recurrence: Add calendar month, handle year rollover
+     - Show recurrence indicator: Display 🔄 icon in table, show pattern in details
+
 ### Cross-Cutting Concerns
 
 **Configuration Management**:
-- Use `config.py` for constants (colors, icons, size limits)
+- Use `config.py` for constants (colors, icons, size limits, priority levels, category defaults)
 - No runtime configuration needed (in-memory only)
 - Hardcoded defaults acceptable for MVP
+- Priority colors: 🔴 High, 🟡 Medium, 🟢 Low
+- Recurrence patterns: Daily, Weekly, Monthly
+- Due date formatting: locale-specific formats configurable
 
 **Logging**:
 - No logging framework needed (no persistence)

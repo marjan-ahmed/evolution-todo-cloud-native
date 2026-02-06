@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(export FEATURE_DIR=\"/e/aidd-projects/evolution-todo-sdd/specs/001-cli-todo-app\")",
+      "Bash(echo:*)",
+      "Bash(git add src/phase_1_cli/main.py pyproject.toml)",
+      "Bash(twine check dist/*)"
+    ]
+  }
+}

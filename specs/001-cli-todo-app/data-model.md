@@ -23,6 +23,11 @@ Represents a single todo item with metadata and completion status.
 | `description` | `str` | No | `""` | Additional details or context (max display: 500 chars) |
 | `completed` | `bool` | Yes | `False` | Status indicating if task is done |
 | `created_at` | `datetime` | Yes | Auto-generated | Timestamp of task creation (UTC) |
+| `priority` | `Priority` | No | `Medium` | Task importance level: High, Medium, or Low |
+| `category` | `str` | No | `None` | User-defined label: Work, Home, Personal, or custom |
+| `due_date` | `datetime` | No | `None` | Deadline date and time for task completion |
+| `recurrence` | `Recurrence` | No | `None` | Task repetition pattern: None, Daily, Weekly, or Monthly |
+| `completed_at` | `datetime` | No | `None` | Timestamp when task was marked completed |
 
 **Validation Rules**:
 - `title` MUST NOT be empty string after stripping whitespace
@@ -31,6 +36,10 @@ Represents a single todo item with metadata and completion status.
 - `id` MUST be unique within the TaskManager collection
 - `id` MUST be positive integer
 - `created_at` is immutable after creation
+- `priority` MUST be one of: High, Medium, or Low
+- `due_date` if provided MUST be a datetime object in the future or present
+- `recurrence` MUST be one of: None, Daily, Weekly, or Monthly
+- `completed_at` is set only when `completed` changes from False to True
 
 **State Transitions**:
 ```
@@ -41,12 +50,30 @@ Represents a single todo item with metadata and completion status.
 
 **Implementation Notes**:
 - Use Python `dataclass` with `@dataclass` decorator
+- Use `Enum` for Priority and Recurrence types
 - `created_at` uses `field(default_factory=datetime.now)`
+- `priority` defaults to `Priority.MEDIUM`
+- `completed_at` set by TaskManager on completion
 - No persistence layer - exists only in memory during runtime
 - ID assignment happens in TaskManager, not in Task constructor
 
 **Example**:
 ```python
+from enum import Enum
+from datetime import datetime
+from dataclasses import dataclass, field
+
+class Priority(Enum):
+    HIGH = "High"
+    MEDIUM = "Medium"
+    LOW = "Low"
+
+class Recurrence(Enum):
+    NONE = "None"
+    DAILY = "Daily"
+    WEEKLY = "Weekly"
+    MONTHLY = "Monthly"
+
 @dataclass
 class Task:
     id: int
@@ -54,6 +81,11 @@ class Task:
     description: str = ""
     completed: bool = False
     created_at: datetime = field(default_factory=datetime.now)
+    priority: Priority = Priority.MEDIUM
+    category: str = None
+    due_date: datetime = None
+    recurrence: Recurrence = Recurrence.NONE
+    completed_at: datetime = None
 ```
 
 ---
@@ -141,27 +173,7 @@ Removes a task from the collection.
 
 ---
 
-#### toggle_task(task_id: int) → bool
-Toggles the completion status of a task.
-
-**Pre-conditions**:
-- Task with `task_id` exists
-
-**Post-conditions**:
-- Task's `completed` status flipped: `False` → `True` or `True` → `False`
-
-**Returns**:
-- `True` if toggle successful
-- `False` if task not found
-
----
-
-#### get_stats() → dict
-Calculates statistics for all tasks.
-
-**Returns**: Dictionary with keys:
-- `total` (int): Total number of tasks
-- `completed` (int): Number of completed tasks
+#### toggle_task(task_id: int) → Task | None
 - `pending` (int): Number of pending tasks
 - `percentage` (float): Completion percentage (0.0-100.0)
 
@@ -169,6 +181,79 @@ Calculates statistics for all tasks.
 - `completed` = count of tasks where `completed == True`
 - `pending` = `total - completed`
 - `percentage` = `(completed / total * 100)` if `total > 0` else `0.0`
+
+---
+
+#### search_tasks(keyword: str) → List[Task]
+Finds tasks matching keyword in title or description.
+
+**Pre-conditions**:
+- `keyword` is a non-empty string
+
+**Returns**:
+- List of tasks where keyword appears in title or description (case-insensitive)
+- Empty list if no matches found
+
+**Implementation**:
+- Use list comprehension with `.lower()` for case-insensitive matching
+
+---
+
+#### filter_tasks(status: bool | None = None, priority: Priority | None = None, category: str | None = None, due_date_filter: str | None = None) → List[Task]
+Filters tasks by multiple criteria using AND logic.
+
+**Pre-conditions**:
+- At least one filter parameter is not None
+
+**Returns**:
+- List of tasks matching all provided filter criteria
+- All tasks if all parameters are None
+
+**Due Date Filter Options**:
+- `"due_today"`: Tasks due today
+- `"upcoming"`: Tasks due in next 7 days
+- `"overdue"`: Tasks past their due date
+
+**Implementation**:
+- Combine predicates with `all()` function
+- Apply to task list for efficient filtering
+
+---
+
+#### sort_tasks(tasks: List[Task], by: str = "created_at") → List[Task]
+Sorts tasks by specified criteria.
+
+**Parameters**:
+- `tasks`: List of tasks to sort (default: all tasks)
+- `by`: Sort criterion - `"created_at"`, `"priority"`, `"due_date"`, or `"title"`
+
+**Returns**:
+- New sorted list (does not modify original list)
+
+**Sort Orders**:
+- `"priority"`: High → Medium → Low
+- `"due_date"`: Nearest → Farthest (None at end)
+- `"title"`: A → Z (alphabetically)
+- `"created_at"`: Newest → Oldest
+
+**Implementation**:
+- Use Python `sorted()` with custom `key` function
+- Priority sorting uses custom order dict: `{Priority.HIGH: 0, Priority.MEDIUM: 1, Priority.LOW: 2}`
+
+---
+
+#### get_overdue_and_upcoming() → dict
+Calculates tasks due soon or overdue.
+
+**Returns**: Dictionary with keys:
+- `overdue` (List[Task]): Tasks with `due_date < datetime.now()`
+- `upcoming` (List[Task]): Tasks due within next 24 hours, not overdue
+- `count` (int): Total count of overdue + upcoming tasks
+
+**Implementation**:
+- Iterate through all tasks
+- Compare `due_date` with `datetime.now()`
+- Separate into overdue and upcoming lists
 
 ---
 
@@ -218,6 +303,10 @@ The following must ALWAYS be true:
 4. **Valid Titles**: No task has an empty title
 5. **Immutable Creation Time**: `created_at` never changes after task creation
 6. **Immutable IDs**: Task IDs never change after creation
+7. **Valid Priority**: All task priorities are High, Medium, or Low
+8. **Valid Recurrence**: All recurrence patterns are None, Daily, Weekly, or Monthly
+9. **Due Date Consistency**: If task has recurrence, it must have a due date
+10. **Completed Timestamp**: `completed_at` is set only when task is marked complete
 
 ## Performance Characteristics
 
@@ -228,6 +317,10 @@ The following must ALWAYS be true:
 | update_task | O(n) | O(1) | Linear search + update |
 | delete_task | O(n) | O(1) | Linear search + remove |
 | toggle_task | O(n) | O(1) | Linear search + update |
+| search_tasks | O(n) | O(m) | n tasks, m matches (list comprehension) |
+| filter_tasks | O(n) | O(k) | n tasks, k filter predicates (all()) |
+| sort_tasks | O(n log n) | O(n) | Python timsort with key function |
+| get_overdue_and_upcoming | O(n) | O(1) | Full list iteration, two result lists |
 | get_stats | O(n) | O(1) | Full list iteration |
 
 **Justification for O(n) operations**:

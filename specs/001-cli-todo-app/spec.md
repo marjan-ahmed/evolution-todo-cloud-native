@@ -92,6 +92,97 @@ As a developer who prefers keyboard efficiency, I want to perform all operations
 
 ---
 
+### User Story 6 - Assign Priorities and Tags/Categories (Priority: P6)
+
+As a developer organizing my work, I want to assign priority levels (high/medium/low) and category labels (work/home/personal) to tasks, so that I can quickly identify what's most important and distinguish between different types of work.
+
+**Why this priority**: Priorities and categories add essential organization capabilities that transform the app from a simple list into a task management tool. This is intermediate-level functionality that makes the app practical for real-world use.
+
+**Independent Test**: Can be tested by creating tasks with different priorities and categories, then viewing them with visual indicators showing importance and type. Delivers value as a task organization tool.
+
+**Acceptance Scenarios**:
+
+1. **Given** user is adding a task, **When** user selects "High" priority and "Work" category, **Then** task is created with these attributes displayed in the task table with visual indicators (e.g., 🔴 for high, 🟡 for medium, 🟢 for low)
+2. **Given** task list displays multiple tasks, **When** viewing tasks, **Then** each task shows both status indicator and priority indicator in the table
+3. **Given** user is editing a task, **When** user changes priority from "Low" to "High" and category from "Personal" to "Work", **Then** task updates immediately with new visual indicators
+4. **Given** user wants to view tasks by category, **When** they filter by "Work" category, **Then** only tasks with "Work" category are displayed in the table
+
+---
+
+### User Story 7 - Search and Filter Tasks (Priority: P7)
+
+As a developer with many tasks, I want to search by keyword and filter by status, priority, or category, so that I can quickly find specific tasks without scanning through the entire list.
+
+**Why this priority**: Search and filtering are critical for usability as the task list grows. Without these features, finding specific tasks becomes time-consuming and frustrating. This is a core organization feature for practical use.
+
+**Independent Test**: Can be tested by creating 10+ tasks with various attributes, then searching for a specific keyword and applying filters to verify only matching tasks appear. Delivers value as a task discovery tool.
+
+**Acceptance Scenarios**:
+
+1. **Given** 20 tasks exist in the system, **When** user enters search term "auth", **Then** only tasks with "auth" in title or description are displayed
+2. **Given** task list shows 15 tasks, **When** user applies filter for "Pending" status, **Then** only pending tasks are displayed with count indicator showing "Showing 8 of 15 tasks"
+3. **Given** user wants to see only high-priority tasks, **When** they apply priority filter "High", **Then** table updates to show only high-priority tasks
+4. **Given** user has both search and filters active, **When** they clear the search term, **Then** tasks matching only the filter criteria are displayed
+5. **Given** no tasks match search/filter criteria, **When** search is executed, **Then** friendly message appears: "No tasks match your criteria. Try adjusting your search or filters."
+
+---
+
+### User Story 8 - Sort Tasks (Priority: P8)
+
+As a developer managing my workflow, I want to sort tasks by due date, priority, or alphabetically, so that I can view them in the order that makes sense for my current context.
+
+**Why this priority**: Sorting provides multiple organizational perspectives and lets users work through tasks systematically. This is a practical usability enhancement that makes the app more flexible for different workflows.
+
+**Independent Test**: Can be tested by creating tasks with varying priorities and dates, then sorting by different criteria to verify the order changes correctly. Delivers value as a task organization tool.
+
+**Acceptance Scenarios**:
+
+1. **Given** tasks exist with various priorities, **When** user selects "Sort by Priority", **Then** tasks reorder with high priority at top, followed by medium, then low
+2. **Given** tasks have due dates, **When** user selects "Sort by Due Date", **Then** tasks reorder with nearest due dates at top
+3. **Given** user selects "Sort Alphabetically", **When** sorting is applied, **Then** tasks reorder alphabetically by title (A-Z)
+4. **Given** tasks are currently sorted by priority, **When** user selects "Sort by Date Created", **Then** tasks reorder by creation timestamp with newest at top
+5. **Given** user applies a sort, **When** they view the task list, **Then** a visual indicator shows current sort order (e.g., "Sorted by: Priority (High→Low)")
+
+---
+
+### User Story 9 - Set Due Dates and Time Reminders (Priority: P9)
+
+As a developer tracking deadlines, I want to set due dates with date/time pickers and receive reminder notifications, so that I never miss important deadlines.
+
+**Why this priority**: Due dates and reminders are critical for time-sensitive task management. This advanced feature transforms the app from a simple list into a deadline tracking tool. This is essential for practical use with real work tasks.
+
+**Independent Test**: Can be tested by creating tasks with due dates, then verifying reminders appear when the time approaches. Delivers value as a deadline management tool.
+
+**Acceptance Scenarios**:
+
+1. **Given** user is adding a task, **When** they select a due date of "2026-01-15" and time of "14:00", **Then** task is created with due date displayed in the table (e.g., "📅 Jan 15, 2026 2:00 PM")
+2. **Given** tasks exist with various due dates, **When** user views the task list, **Then** tasks due within 24 hours show special indicator (e.g., ⚠️) to draw attention
+3. **Given** a task is due in 15 minutes, **When** the time arrives, **Then** a reminder notification appears in the UI highlighting the due task
+4. **Given** user is editing a task, **When** they change the due date, **Then** task updates with new date and any outstanding reminders are rescheduled
+5. **Given** a task is overdue, **When** user views the task list, **Then** it displays with red indicator and "OVERDUE" label
+6. **Given** user wants to filter by due date, **When** they apply "Due Today" filter, **Then** only tasks due today are displayed
+
+---
+
+### User Story 10 - Recurring Tasks (Priority: P10)
+
+As a developer managing recurring work, I want to set tasks to repeat daily, weekly, or monthly, so that I don't need to manually recreate repetitive tasks like "Weekly team meeting".
+
+**Why this priority**: Recurring tasks reduce manual work and ensure important recurring tasks aren't forgotten. This advanced feature provides significant time savings for users with regular obligations.
+
+**Independent Test**: Can be tested by creating a recurring task, completing it, then verifying a new instance is created with the next scheduled date. Delivers value as an automation tool.
+
+**Acceptance Scenarios**:
+
+1. **Given** user is creating a task, **When** they set recurrence to "Weekly", **Then** task is created with recurrence indicator displayed (e.g., 🔄 Weekly)
+2. **Given** a recurring task exists with weekly recurrence, **When** user marks it as completed, **Then** a new task instance is automatically created with due date 7 days later
+3. **Given** user marks a recurring task complete, **When** the new instance is created, **Then** it copies the title, description, priority, and category from the original task
+4. **Given** user has a monthly recurring task, **When** they complete it on January 15th, **Then** next instance is scheduled for February 15th
+5. **Given** user is viewing a recurring task, **When** they check its details, **Then** recurrence pattern and next due date are clearly displayed
+6. **Given** user wants to stop a recurring task, **When** they edit the task and set recurrence to "None", **Then** future instances are not automatically created
+
+---
+
 ### Edge Cases
 
 - What happens when user attempts to edit/delete while no tasks exist? Display friendly error: "No tasks available. Add a task first!"
@@ -100,6 +191,12 @@ As a developer who prefers keyboard efficiency, I want to perform all operations
 - How does system handle rapid task additions (stress testing)? System maintains responsive UI, tasks remain in memory with unique IDs, no performance degradation up to 1000 tasks
 - What happens when user enters non-numeric ID for edit/delete operations? Display validation error: "Please enter a valid task ID number"
 - How does system handle special characters or emojis in task titles? Accept and display all UTF-8 characters correctly across platforms
+- What happens when user searches with no matching results? Display friendly message: "No tasks match your criteria. Try adjusting your search or filters."
+- How does system handle tasks with conflicting sort criteria (e.g., sort by priority then by date)? Apply primary sort criteria first, then secondary criteria to break ties
+- What happens when a recurring task is created without a due date? System defaults recurrence based on completion date or warns user that due date is required for recurrence
+- What happens when a task has both priority and category filters active? System applies both filters (AND logic) showing tasks that match all criteria
+- How does system handle reminders when application is not running? Reminders are displayed when application launches with summary of overdue and upcoming tasks
+- What happens when user attempts to filter by category on tasks with no category assigned? System shows all tasks (no filter applied) or offers "Uncategorized" option
 
 ## Requirements *(mandatory)*
 
@@ -120,6 +217,26 @@ As a developer who prefers keyboard efficiency, I want to perform all operations
 - **FR-013**: System MUST use color-coding: gray/white for pending, green for completed, borders for panels, highlights for interactive elements
 - **FR-014**: System MUST handle edge cases gracefully: empty lists, invalid IDs, missing inputs, terminal size constraints
 - **FR-015**: System MUST run cross-platform on Windows, macOS, and Linux terminals with standard 256-color support
+- **FR-016**: System MUST allow users to assign priority levels (High, Medium, Low) to tasks with visual indicators (🔴, 🟡, 🟢)
+- **FR-017**: System MUST allow users to assign category labels to tasks (Work, Home, Personal) with customizable categories supported
+- **FR-018**: System MUST display priority and category in task table with clear visual distinction
+- **FR-019**: System MUST support filtering tasks by status (Pending/Completed), priority level, or category
+- **FR-020**: System MUST provide search functionality to find tasks by keyword in title or description
+- **FR-021**: System MUST combine multiple filters (AND logic) when user applies more than one filter criterion
+- **FR-022**: System MUST display count of filtered tasks (e.g., "Showing 8 of 15 tasks")
+- **FR-023**: System MUST sort tasks by priority (High→Medium→Low), due date (nearest→farthest), alphabetically (A→Z), or creation date (newest→oldest)
+- **FR-024**: System MUST show current sort order indicator when tasks are sorted
+- **FR-025**: System MUST allow users to set due dates with date/time picker when creating or editing tasks
+- **FR-026**: System MUST display due dates in formatted human-readable format (e.g., "Jan 15, 2026 2:00 PM")
+- **FR-027**: System MUST show special visual indicators for tasks due within 24 hours (⚠️) and overdue tasks (🔴 OVERDUE)
+- **FR-028**: System MUST provide reminder notifications when tasks become due or overdue
+- **FR-029**: System MUST display summary of overdue and upcoming tasks when application launches
+- **FR-030**: System MUST allow users to set recurrence patterns for tasks (None, Daily, Weekly, Monthly)
+- **FR-031**: System MUST automatically create new task instances when recurring tasks are completed, with next due date calculated based on recurrence pattern
+- **FR-032**: System MUST copy title, description, priority, and category from completed recurring task to new instance
+- **FR-033**: System MUST display recurrence indicator on recurring tasks (e.g., 🔄 Weekly)
+- **FR-034**: System MUST allow users to stop recurrence by setting pattern to "None" when editing a task
+- **FR-035**: System MUST maintain task search and filter state during navigation until explicitly cleared
 
 ### Key Entities
 
@@ -129,6 +246,11 @@ As a developer who prefers keyboard efficiency, I want to perform all operations
   - `description` (string, optional): Additional details or context
   - `completed` (boolean, default false): Status indicating if task is done
   - `created_at` (datetime, auto-generated): Timestamp of task creation
+  - `priority` (enum: High/Medium/Low, default Medium): Task importance level
+  - `category` (string, optional): User-defined label (e.g., Work, Home, Personal)
+  - `due_date` (datetime, optional): Deadline date and time for task completion
+  - `recurrence` (enum: None/Daily/Weekly/Monthly, default None): How often task repeats
+  - `completed_at` (datetime, optional): Timestamp when task was marked completed
 
 - **TaskManager**: Business logic component (decoupled from UI) that handles:
   - In-memory task storage in a list or dictionary
@@ -137,6 +259,14 @@ As a developer who prefers keyboard efficiency, I want to perform all operations
   - Statistics calculation (total, pending, completed, percentage)
   - Task validation rules
   - Unique ID generation
+  - Priority assignment and management
+  - Category assignment and filtering
+  - Keyword search functionality
+  - Multi-criteria filtering (status, priority, category, due date)
+  - Task sorting by various criteria (priority, due date, alphabetically, creation date)
+  - Due date tracking and reminder calculation
+  - Recurrence pattern handling and automatic task instance creation
+  - Overdue detection and task expiration logic
 
 ## Success Criteria *(mandatory)*
 
@@ -152,6 +282,16 @@ As a developer who prefers keyboard efficiency, I want to perform all operations
 - **SC-008**: UI code and business logic (TaskManager) can be separated into different modules without breaking functionality, demonstrating clean architecture
 - **SC-009**: Users can complete a workflow (add 3 tasks, mark 1 complete, edit 1, delete 1) in under 60 seconds using keyboard shortcuts
 - **SC-010**: Zero crashes or unhandled exceptions during normal usage including edge cases (invalid inputs, empty states, large task lists)
+- **SC-011**: Users can assign priority and category to a new task in under 15 seconds from launch, including selecting values from picker
+- **SC-012**: Search operation returns results for 20 tasks in under 1 second with keyword matching in title or description
+- **SC-013**: Applying any filter (status, priority, category) updates task list in under 500 milliseconds with count indicator
+- **SC-014**: Sorting tasks by any criterion reorders and displays the list in under 1 second
+- **SC-015**: Users can set a due date with date/time picker in under 20 seconds including selecting date and time values
+- **SC-016**: Due date reminders appear within 1 minute of the scheduled time when application is running
+- **SC-017**: Overdue and upcoming task summary displays within 3 seconds of application launch
+- **SC-018**: Completing a recurring task automatically creates the next instance in under 1 second with correct due date calculation
+- **SC-019**: Users can set a task to recur daily/weekly/monthly in under 10 seconds during task creation or editing
+- **SC-020**: Visual indicators (priority, category, due date, recurrence) are clearly distinguishable in task table with 95% of users correctly interpreting them without documentation
 
 ## Assumptions
 
@@ -163,11 +303,14 @@ As a developer who prefers keyboard efficiency, I want to perform all operations
 - Rich library is available for terminal formatting enhancements
 - Tasks do not need to persist between application sessions (in-memory only is acceptable)
 - No authentication or multi-user support is required
-- Task priority levels or categories are not required for MVP
-- Due dates and reminders are not required
-- Search and filter functionality is not required for MVP (can be added later)
-- Export/import functionality is not required
 - Users will install dependencies via pip/requirements.txt before running
+- Date/time picker can be simple text-based input or basic calendar selection
+- Reminders are in-application notifications displayed within the TUI interface
+- Recurrence patterns limited to Daily, Weekly, and Monthly (no custom intervals)
+- Custom categories beyond default (Work, Home, Personal) are optional
+- Search is simple keyword matching (no complex queries or regex)
+- Sorting applies to displayed view only, not to underlying data structure
+- Due date calculations follow standard calendar rules (including leap years)
 
 ## Dependencies
 
@@ -190,22 +333,31 @@ As a developer who prefers keyboard efficiency, I want to perform all operations
 - Cross-platform terminal compatibility
 - Modular architecture with UI/logic separation
 - Graceful handling of edge cases
+- Priority levels (High, Medium, Low) with visual indicators
+- Category labels (Work, Home, Personal) with support for custom categories
+- Keyword search functionality for task titles and descriptions
+- Multi-criteria filtering by status, priority, category, and due date
+- Task sorting by priority, due date, alphabetically, or creation date
+- Due date assignment with date/time picker
+- Visual indicators for due soon (⚠️) and overdue (🔴 OVERDUE) tasks
+- In-application reminder notifications for due and overdue tasks
+- Overdue and upcoming task summary on application launch
+- Recurring tasks with Daily, Weekly, and Monthly patterns
+- Automatic creation of next instance when recurring task is completed
 
 ### Out of Scope
 
 - Task persistence (file system, database)
 - Multi-user support or authentication
-- Task priorities, categories, or tags
-- Due dates, reminders, or notifications
-- Search and filtering functionality
-- Sorting options (by date, priority, etc.)
 - Export/import to external formats (JSON, CSV, etc.)
 - Undo/redo functionality
 - Task history or audit trail
-- Recurring tasks
 - Subtasks or task hierarchies
 - Collaboration features (sharing, comments)
 - Web or mobile interfaces
 - Cloud synchronization
 - Email integration
 - Calendar integration
+- Custom recurrence intervals (beyond Daily, Weekly, Monthly)
+- Complex search queries or regex support
+- Task dependencies or prerequisites
